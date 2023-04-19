@@ -34,7 +34,7 @@ data "template_file" "startup_script" {
 }
 
 module "network_mig_r1" {
-  source = "../../../../modules/mig_network"
+  source = "../../modules/mig_network"
 
   project_id    = var.project_id
   region        = var.region_r1
@@ -45,7 +45,7 @@ module "network_mig_r1" {
 }
 
 module "network_mig_r2" {
-  source = "../../../../modules/mig_network"
+  source = "../../modules/mig_network"
 
   project_id    = var.project_id
   region        = var.region_r2
@@ -56,7 +56,7 @@ module "network_mig_r2" {
 }
 
 module "mig_r1" {
-  source = "../../../../modules/mig"
+  source = "../../modules/mig"
 
   # VM Template
   project_id   = var.project_id
@@ -90,7 +90,7 @@ module "mig_r1" {
 }
 
 module "mig_r2" {
-  source = "../../../../modules/mig"
+  source = "../../modules/mig"
 
   # VM Template
   project_id   = var.project_id
@@ -127,89 +127,126 @@ resource "random_id" "suffix" {
   byte_length = 4
 }
 
-module "cloud_armor" {
-  source      = "../../../../modules/cloud-armor"
-  project_id  = var.project_id
-  name        = "ca-policy-${random_id.suffix.hex}"
-  description = "Cloud Armor Security Policy"
-  type        = "CLOUD_ARMOR"
+module "cloud-armor" {
+  source  = "GoogleCloudPlatform/cloud-armor/google"
+  version = "0.3.0"
 
-  default_rules = {
-    "default_rule" = {
-      action         = "deny"
-      priority       = "2147483647"
-      versioned_expr = "SRC_IPS_V1"
-      src_ip_ranges  = ["*"]
-      description    = "Default IP rule"
+  project_id                           = var.project_id
+  name                                 = "ca-policy-${random_id.suffix.hex}"
+  description                          = "Cloud Armor security policy with preconfigured rules, security rules and custom rules"
+  default_rule_action                  = "deny(403)"
+  type                                 = "CLOUD_ARMOR"
+  layer_7_ddos_defense_enable          = true
+  layer_7_ddos_defense_rule_visibility = "STANDARD"
+
+  pre_configured_rules = {
+    "sqli_sensitivity_level_1" = {
+      action          = "deny(502)"
+      priority        = 1
+      target_rule_set = "sqli-v33-stable"
     }
+
+    "xss-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 2
+      description       = "XSS Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "xss-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "lfi-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 3
+      description       = "LFI Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "lfi-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "rfi-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 4
+      description       = "RFI Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "rfi-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "methodenforcement-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 5
+      description       = "Method Enforcement Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "methodenforcement-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "rce-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 6
+      description       = "RCE Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "rce-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "protocolattack-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 7
+      description       = "Protocol Attack Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "protocolattack-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "scannerdetection-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 8
+      description       = "Scanner Detection Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "scannerdetection-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "php-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 9
+      description       = "Php Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "php-v33-stable"
+      sensitivity_level = 1
+    }
+
+    "sessionfixation-stable_level_1" = {
+      action            = "deny(502)"
+      priority          = 10
+      description       = "Session Fixation Sensitivity Level 1"
+      preview           = true
+      target_rule_set   = "sessionfixation-v33-stable"
+      sensitivity_level = 1
+    }
+
   }
-  src_geo_rules = {
-    "geo_us" = {
+
+  security_rules = {
+    "allow_healthcheck_ip" = {
+      action        = "allow"
+      priority      = 11
+      description   = "Allow Healthcheck IP address"
+      src_ip_ranges = ["35.191.0.0/16"]
+    }
+
+  }
+
+  custom_rules = {
+    allow_specific_regions = {
       action      = "allow"
-      priority    = "1000"
-      expression  = "origin.region_code == 'US'"
-      description = "US Geolocalization Rule"
-    }
-  }
-  src_ip_rules = {
-    "src_hc_ip" = {
-      action         = "allow"
-      priority       = "1001"
-      versioned_expr = "SRC_IPS_V1"
-      src_ip_ranges  = ["35.191.0.0/16"]
-      description    = "Rule to allow healthcheck IP range"
-    }
-  }
-  owasp_rules = {
-    "rule_sqli" = {
-      action     = "deny(403)"
-      priority   = "1002"
-      expression = "evaluatePreconfiguredWaf('sqli-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_xss" = {
-      action     = "deny(403)"
-      priority   = "1003"
-      expression = "evaluatePreconfiguredWaf('xss-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_lfi" = {
-      action     = "deny(403)"
-      priority   = "1004"
-      expression = "evaluatePreconfiguredWaf('lfi-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_rfi" = {
-      action     = "deny(403)"
-      priority   = "1005"
-      expression = "evaluatePreconfiguredWaf('rfi-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_methodenforcement" = {
-      action     = "deny(403)"
-      priority   = "1006"
-      expression = "evaluatePreconfiguredWaf('methodenforcement-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_rce" = {
-      action     = "deny(403)"
-      priority   = "1007"
-      expression = "evaluatePreconfiguredWaf('rce-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_protocol" = {
-      action     = "deny(403)"
-      priority   = "1008"
-      expression = "evaluatePreconfiguredWaf('protocolattack-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_scanner" = {
-      action     = "deny(403)"
-      priority   = "1009"
-      expression = "evaluatePreconfiguredWaf('scannerdetection-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_php" = {
-      action     = "deny(403)"
-      priority   = "1010"
-      expression = "evaluatePreconfiguredWaf('php-v33-stable', {'sensitivity': 1})"
-    }
-    "rule_session" = {
-      action     = "deny(403)"
-      priority   = "1011"
-      expression = "evaluatePreconfiguredWaf('sessionfixation-v33-stable', {'sensitivity': 1})"
+      priority    = 12
+      description = "Allow specific Regions"
+      expression  = <<-EOT
+        '[US]'.contains(origin.region_code)
+      EOT
     }
   }
 }
@@ -218,17 +255,15 @@ module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
   version = "7.0.0"
 
-  name                  = "lb-web-app"
-  project               = var.project_id
-  target_tags           = ["backend-r1", "backend-r2"]
+  name        = "lb-web-app"
+  project     = var.project_id
+  target_tags = ["backend-r1", "backend-r2"]
 
-  firewall_networks     = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
-  firewall_projects     = [var.project_id, var.project_id]
-  use_ssl_certificates  = true
-  ssl                   = true
-  https_redirect        = true
-
-  ssl_certificates      = google_compute_ssl_certificate.example.*.self_link
+  firewall_networks    = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
+  firewall_projects    = [var.project_id, var.project_id]
+  use_ssl_certificates = false
+  ssl                  = false
+  https_redirect       = false
 
   backends = {
     default = {
@@ -241,13 +276,14 @@ module "lb-http" {
       enable_cdn                      = var.enable_cdn
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
-      security_policy                 = null
+      security_policy                 = module.cloud-armor.policy.name
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
       custom_response_headers         = null
 
       health_check = {
+
         check_interval_sec  = 120
         timeout_sec         = 120
         healthy_threshold   = 2
@@ -270,6 +306,7 @@ module "lb-http" {
         max_ttl           = 28800
         serve_while_stale = 86400
         negative_caching  = true
+
         negative_caching_policy = {
           code = 404
           ttl  = 60
@@ -285,17 +322,19 @@ module "lb-http" {
 
       groups = [
         {
-          group                        = module.mig_r1.instance_group
+          group = module.mig_r1.instance_group
+
           balancing_mode               = "UTILIZATION"
           capacity_scaler              = null
           description                  = null
           max_connections              = null
           max_connections_per_instance = null
           max_connections_per_endpoint = null
-          max_rate                     = 10
-          max_rate_per_instance        = null
-          max_rate_per_endpoint        = null
-          max_utilization              = 0.9
+
+          max_rate              = 10
+          max_rate_per_instance = null
+          max_rate_per_endpoint = null
+          max_utilization       = 0.9
         },
         {
           group                        = module.mig_r2.instance_group
@@ -319,7 +358,4 @@ module "lb-http" {
       }
     }
   }
-  depends_on = [
-    google_compute_ssl_certificate.example
-  ]
 }
