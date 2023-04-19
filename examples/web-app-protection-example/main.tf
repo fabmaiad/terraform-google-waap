@@ -144,6 +144,15 @@ module "cloud-armor" {
       action          = "deny(502)"
       priority        = 1
       target_rule_set = "sqli-v33-stable"
+      rate_limit_options = {
+        exceed_action                        = "deny(502)"
+        rate_limit_http_request_count        = 10
+        rate_limit_http_request_interval_sec = 60    # must be one of 60, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600 seconds
+        ban_duration_sec                     = 600   # needed only if action is rate_based_ban
+        ban_http_request_count               = 1000  # needed only if action is rate_based_ban
+        ban_http_request_interval_sec        = 300   # must be one of 60, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600 seconds. needed only if action is rate_based_ban
+        enforce_on_key                       = "ALL" # All is default value. If null is passed terraform will use ALL as the value
+      }
     }
 
     "xss-stable_level_1" = {
