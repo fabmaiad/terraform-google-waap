@@ -264,6 +264,7 @@ module "lb-http" {
   use_ssl_certificates = false
   ssl                  = false
   https_redirect       = false
+  quic                 = true
 
   backends = {
     default = {
