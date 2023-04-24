@@ -145,13 +145,9 @@ module "cloud-armor" {
       priority        = 1
       target_rule_set = "sqli-v33-stable"
       rate_limit_options = {
-        exceed_action                        = "deny(502)"
-        rate_limit_http_request_count        = 10
-        rate_limit_http_request_interval_sec = 60    # must be one of 60, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600 seconds
-        ban_duration_sec                     = 600   # needed only if action is rate_based_ban
-        ban_http_request_count               = 1000  # needed only if action is rate_based_ban
-        ban_http_request_interval_sec        = 300   # must be one of 60, 120, 180, 240, 300, 600, 900, 1200, 1800, 2700, 3600 seconds. needed only if action is rate_based_ban
-        enforce_on_key                       = "ALL" # All is default value. If null is passed terraform will use ALL as the value
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
       }
     }
 
@@ -162,6 +158,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "xss-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "lfi-stable_level_1" = {
@@ -171,6 +172,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "lfi-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "rfi-stable_level_1" = {
@@ -180,6 +186,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "rfi-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "methodenforcement-stable_level_1" = {
@@ -189,6 +200,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "methodenforcement-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "rce-stable_level_1" = {
@@ -198,6 +214,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "rce-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "protocolattack-stable_level_1" = {
@@ -207,6 +228,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "protocolattack-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "scannerdetection-stable_level_1" = {
@@ -216,6 +242,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "scannerdetection-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "php-stable_level_1" = {
@@ -225,6 +256,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "php-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
     "sessionfixation-stable_level_1" = {
@@ -234,6 +270,11 @@ module "cloud-armor" {
       preview           = true
       target_rule_set   = "sessionfixation-v33-stable"
       sensitivity_level = 1
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
   }
@@ -244,6 +285,11 @@ module "cloud-armor" {
       priority      = 11
       description   = "Allow Healthcheck IP address"
       src_ip_ranges = ["35.191.0.0/16"]
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
 
   }
@@ -256,6 +302,11 @@ module "cloud-armor" {
       expression  = <<-EOT
         '[US]'.contains(origin.region_code)
       EOT
+      rate_limit_options = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
     }
   }
 }
