@@ -123,6 +123,25 @@ module "mig_r2" {
   ]
 }
 
+# Cloud Armor
+resource "google_recaptcha_enterprise_key" "primary" {
+  display_name = "web_recaptcha"
+
+  project = var.project_id
+
+  testing_options {
+    testing_challenge = "NOCAPTCHA"
+    testing_score     = 0.5
+  }
+
+  web_settings {
+    integration_type              = "CHECKBOX"
+    allow_all_domains             = true
+    allowed_domains               = []
+    challenge_security_preference = "USABILITY"
+  }
+}
+
 resource "random_id" "suffix" {
   byte_length = 4
 }
@@ -138,6 +157,8 @@ module "cloud-armor" {
   type                                 = "CLOUD_ARMOR"
   layer_7_ddos_defense_enable          = true
   layer_7_ddos_defense_rule_visibility = "STANDARD"
+
+  recaptcha_redirect_site_key = google_recaptcha_enterprise_key.primary.name
 
   pre_configured_rules = {
     "sqli_sensitivity_level_1" = {
@@ -311,6 +332,7 @@ module "cloud-armor" {
   }
 }
 
+# LB
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
   version = "7.0.0"
