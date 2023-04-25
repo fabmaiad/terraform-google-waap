@@ -153,7 +153,7 @@ module "cloud-armor" {
   project_id                           = var.project_id
   name                                 = "ca-policy-${random_id.suffix.hex}"
   description                          = "Cloud Armor security policy with preconfigured rules, security rules and custom rules"
-  default_rule_action                  = "deny(403)"
+  default_rule_action                  = "allow"
   type                                 = "CLOUD_ARMOR"
   layer_7_ddos_defense_enable          = true
   layer_7_ddos_defense_rule_visibility = "STANDARD"
