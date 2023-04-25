@@ -34,7 +34,7 @@ data "template_file" "startup_script" {
 }
 
 module "network_mig_r1" {
-  source = "../../modules/mig_network"
+  source = "../../../../modules/mig_network"
 
   project_id    = var.project_id
   region        = var.region_r1
@@ -45,7 +45,7 @@ module "network_mig_r1" {
 }
 
 module "network_mig_r2" {
-  source = "../../modules/mig_network"
+  source = "../../../../modules/mig_network"
 
   project_id    = var.project_id
   region        = var.region_r2
@@ -56,7 +56,7 @@ module "network_mig_r2" {
 }
 
 module "mig_r1" {
-  source = "../../modules/mig"
+  source = "../../../../modules/mig"
 
   # VM Template
   project_id   = var.project_id
@@ -90,7 +90,7 @@ module "mig_r1" {
 }
 
 module "mig_r2" {
-  source = "../../modules/mig"
+  source = "../../../../modules/mig"
 
   # VM Template
   project_id   = var.project_id
