@@ -309,7 +309,7 @@ module "cloud-armor-edge" {
   description                          = "Cloud Armor Edge Security Policy"
   default_rule_action                  = "allow"
   type                                 = "CLOUD_ARMOR_EDGE"
-  custom_rules = {
+  pre_configured_rules = {
     deny_specific_regions = {
       action      = "deny"
       priority    = 12
