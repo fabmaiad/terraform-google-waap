@@ -316,11 +316,11 @@ module "cloud-armor" {
   }
 
   custom_rules = {
-    allow_specific_regions = {
+    deny_specific_regions = {
       action      = "deny(403)"
       priority    = 12
-      description = "Allow specific Regions" # '[US]'.contains(origin.region_code)
-      expression  = "origin.region_code == 'US'"
+      description = "Deny specific Regions" # '[US]'.contains(origin.region_code)
+      expression  = "origin.region_code == 'BR'"
       rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
