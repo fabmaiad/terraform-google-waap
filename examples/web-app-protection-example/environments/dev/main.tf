@@ -315,7 +315,7 @@ resource "google_compute_security_policy" "policy_edge" {
     }
     description = "Allow access to IPs in 35.191.0.0/16"
   }
-
+}
   rule {
     action        = "deny(403)"
     priority      = "12"
