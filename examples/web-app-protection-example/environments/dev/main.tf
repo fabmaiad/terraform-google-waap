@@ -348,7 +348,7 @@ module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
   version = "7.0.0"
 
-  name        = "lb-web-app"
+  name        = "lb-web-app-1"
   project     = var.project_id
   target_tags = ["backend-r1", "backend-r2"]
 
