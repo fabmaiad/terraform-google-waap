@@ -301,7 +301,7 @@ module "cloud-armor" {
 }
 resource "google_compute_security_policy" "policy" {
   project   = var.project_id
-  name      = "ca-edge-policy-${random_id.suffix.hex}"
+  name      = "ca-edge-${random_id.suffix.hex}"
   type      = "CLOUD_ARMOR_EDGE"
 
   rule {
