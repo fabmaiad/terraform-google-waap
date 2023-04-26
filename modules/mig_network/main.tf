@@ -60,7 +60,7 @@ resource "google_compute_firewall" "inbound-ip-ssh" {
   direction = "INGRESS"
   allow {
     protocol = "tcp"
-    ports    = ["22", "8080", "80"] # SSH port and Jenkins port
+    ports    = ["22", "8080"] # SSH port and Jenkins port
   }
   source_ranges = [
     "35.235.240.0/20"
