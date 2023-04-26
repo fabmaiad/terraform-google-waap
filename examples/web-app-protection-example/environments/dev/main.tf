@@ -318,14 +318,22 @@ resource "google_compute_security_policy" "policy" {
     action        = "allow"
     priority      = "12"
     description   = "default rule"
-    expression    = "origin.region_code == '[US,BR]'"
+    match {
+      expr {
+        expression    = "origin.region_code == '[US,BR]'"
+      }
+    }
   }
 
   rule {
     action        = "allow"
     priority      = "2147483647"
     description   = "default rule"
-    expression    = "*"
+    match {
+      expr {
+        expression    = "*"
+      }
+    }
   }
 }
 
