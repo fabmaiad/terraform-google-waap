@@ -320,7 +320,7 @@ module "cloud-armor" {
       action      = "deny(403)"
       priority    = 12
       description = "Allow specific Regions" # '[US]'.contains(origin.region_code)
-      expression  = "origin.region_code == 'BR'"
+      expression  = "origin.region_code == 'US'"
       rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
