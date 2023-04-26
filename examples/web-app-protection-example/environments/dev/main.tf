@@ -321,7 +321,7 @@ module "cloud-armor" {
       priority    = 12
       description = "Allow specific Regions"
       expression  = <<-EOT
-        '[BR]'.contains(origin.region_code)
+        '[US]'.contains(origin.region_code)
       EOT
       rate_limit_options = {
         rate_limit_http_request_count        = 100
