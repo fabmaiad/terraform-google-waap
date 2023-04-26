@@ -342,6 +342,11 @@ resource "google_compute_security_policy" "policy_edge" {
     create_before_destroy = true
   }
 }
+
+output "policy_edge" {
+  value = google_compute_security_policy.policy_edge.self_link
+}
+
 # LB
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
