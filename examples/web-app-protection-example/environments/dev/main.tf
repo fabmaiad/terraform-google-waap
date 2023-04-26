@@ -315,7 +315,6 @@ resource "google_compute_security_policy" "policy_edge" {
     }
     description = "Allow access to IPs in 35.191.0.0/16"
   }
-}
   rule {
     action        = "deny(403)"
     priority      = "12"
@@ -341,8 +340,8 @@ resource "google_compute_security_policy" "policy_edge" {
 
   lifecycle {
     create_before_destroy = true
+  }
 }
-
 # LB
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
