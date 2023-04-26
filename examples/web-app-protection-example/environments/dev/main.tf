@@ -370,8 +370,9 @@ module "lb-http" {
       enable_cdn                      = var.enable_cdn
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
-      security_policy                 = module.cloud-armor.policy.name
-      edge_security_policy            = google_compute_security_policy.policy_edge.id
+      #security_policy                 = module.cloud-armor.policy.name
+      security_policy                 = google_compute_security_policy.policy_edge.id
+      #edge_security_policy            = google_compute_security_policy.policy_edge.id
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
