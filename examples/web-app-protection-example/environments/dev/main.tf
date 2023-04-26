@@ -316,26 +316,14 @@ module "cloud-armor-edge" {
       priority      = 11
       description   = "Allow Healthcheck IP address"
       src_ip_ranges = ["35.191.0.0/16"]
-      rate_limit_options = {
-        rate_limit_http_request_count        = 100
-        rate_limit_http_request_interval_sec = 10
-        ban_duration_sec                     = 60
-      }
     }
-
   }
-
   custom_rules = {
     deny_specific_regions = {
       action      = "deny(403)"
       priority    = 12
       description = "Deny specific Regions"
       expression  = "origin.region_code == 'US'"
-      rate_limit_options = {
-        rate_limit_http_request_count        = 100
-        rate_limit_http_request_interval_sec = 10
-        ban_duration_sec                     = 60
-      }
     }
   }
 }
