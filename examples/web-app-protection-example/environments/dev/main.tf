@@ -320,7 +320,7 @@ module "cloud-armor-edge" {
   }
   custom_rules = {
     deny_specific_regions = {
-      action      = "deny(403)"
+      action      = "deny"
       priority    = 12
       description = "Deny specific Regions"
       expression  = "origin.region_code == 'US'"
