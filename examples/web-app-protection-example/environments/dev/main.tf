@@ -346,7 +346,7 @@ resource "google_compute_security_policy" "policy_edge" {
 # LB
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
-  version = "7.0.0"
+  version = "8.0.0"
 
   name        = "lb-web-app-1"
   project     = var.project_id
