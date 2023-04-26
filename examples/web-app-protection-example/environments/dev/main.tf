@@ -316,7 +316,7 @@ resource "google_compute_security_policy" "policy" {
   }
 
   rule {
-    action        = "allow"
+    action        = "deny(403)"
     priority      = "12"
     description   = "default rule"
     match {
