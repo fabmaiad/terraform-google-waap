@@ -309,15 +309,6 @@ module "cloud-armor-edge" {
   description                          = "Cloud Armor Edge Security Policy"
   default_rule_action                  = "allow"
   type                                 = "CLOUD_ARMOR_EDGE"
-
-  security_rules = {
-    "allow_healthcheck_ip" = {
-      action        = "allow"
-      priority      = 11
-      description   = "Allow Healthcheck IP address"
-      src_ip_ranges = ["35.191.0.0/16"]
-    }
-  }
   custom_rules = {
     deny_specific_regions = {
       action      = "deny"
