@@ -319,10 +319,8 @@ module "cloud-armor" {
     allow_specific_regions = {
       action      = "deny(403)"
       priority    = 12
-      description = "Allow specific Regions"
-      expression  = <<-EOT
-        '[US]'.contains(origin.region_code)
-      EOT
+      description = "Allow specific Regions" # '[US]'.contains(origin.region_code)
+      expression  = "origin.region_code == 'BR'"
       rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
