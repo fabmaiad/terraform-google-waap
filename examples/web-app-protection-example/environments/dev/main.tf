@@ -343,10 +343,6 @@ resource "google_compute_security_policy" "policy_edge" {
   }
 }
 
-output "policy_edge" {
-  value = google_compute_security_policy.policy_edge.self_link
-}
-
 # LB
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
@@ -375,7 +371,7 @@ module "lb-http" {
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
       security_policy                 = module.cloud-armor.policy.name
-      edge_security_policy            = output.policy_edge.value
+      edge_security_policy            = google_compute_security_policy.policy_edge.id
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
