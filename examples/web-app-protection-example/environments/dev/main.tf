@@ -338,6 +338,9 @@ resource "google_compute_security_policy" "policy_edge" {
     }
     description = "default rule"
   }
+
+  lifecycle {
+    create_before_destroy = true
 }
 
 # LB
