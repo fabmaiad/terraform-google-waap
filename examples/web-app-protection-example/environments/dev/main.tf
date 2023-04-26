@@ -309,12 +309,14 @@ module "cloud-armor-edge" {
   description                          = "Cloud Armor Edge Security Policy"
   default_rule_action                  = "allow"
   type                                 = "CLOUD_ARMOR_EDGE"
-  pre_configured_rules = {
+  custom_rules = {
     deny_specific_regions = {
       action      = "deny"
       priority    = 12
       description = "Deny specific Regions"
-      expression  = "origin.region_code == 'US'"
+      expression  = <<-EOT
+       '[AU,BE]'.contains(origin.region_code)
+      EOT
     }
   }
 }
