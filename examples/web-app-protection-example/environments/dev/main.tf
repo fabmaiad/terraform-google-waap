@@ -307,7 +307,7 @@ module "cloud-armor-edge" {
   project_id                           = var.project_id
   name                                 = "ca-policy-edge-${random_id.suffix.hex}"
   description                          = "Cloud Armor Edge Security Policy"
-  default_rule_action                  = "deny(403)"
+  default_rule_action                  = "allow"
   type                                 = "CLOUD_ARMOR_EDGE"
 
   security_rules = {
