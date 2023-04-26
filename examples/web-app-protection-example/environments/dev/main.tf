@@ -297,8 +297,18 @@ module "cloud-armor" {
         ban_duration_sec                     = 60
       }
     }
-
   }
+}
+
+module "cloud-armor-edge" {
+  source  = "GoogleCloudPlatform/cloud-armor/google"
+  version = "0.3.0"
+
+  project_id                           = var.project_id
+  name                                 = "ca-policy-${random_id.suffix.hex}"
+  description                          = "Cloud Armor Edge Security Policy"
+  default_rule_action                  = "deny(403)"
+  type                                 = "CLOUD_ARMOR_EDGE"
 
   security_rules = {
     "allow_healthcheck_ip" = {
@@ -319,8 +329,8 @@ module "cloud-armor" {
     deny_specific_regions = {
       action      = "deny(403)"
       priority    = 12
-      description = "Deny specific Regions" # '[US]'.contains(origin.region_code)
-      expression  = "origin.region_code == 'BR'"
+      description = "Deny specific Regions"
+      expression  = "origin.region_code == 'US'"
       rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
@@ -358,6 +368,7 @@ module "lb-http" {
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
       security_policy                 = module.cloud-armor.policy.name
+      edge_security_policy            = module.cloud-armor-edge.policy.name
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
