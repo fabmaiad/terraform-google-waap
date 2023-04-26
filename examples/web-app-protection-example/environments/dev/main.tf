@@ -299,7 +299,7 @@ module "cloud-armor" {
     }
   }
 }
-resource "google_compute_security_policy" "policy" {
+resource "google_compute_security_policy" "policy_edge" {
   project   = var.project_id
   name      = "ca-edge-${random_id.suffix.hex}"
   type      = "CLOUD_ARMOR_EDGE"
@@ -368,7 +368,7 @@ module "lb-http" {
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
       security_policy                 = module.cloud-armor.policy.name
-      edge_security_policy            = google_compute_security_policy.policy.id
+      edge_security_policy            = google_compute_security_policy.policy_edge.id
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
