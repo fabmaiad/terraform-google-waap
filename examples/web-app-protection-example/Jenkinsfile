@@ -51,6 +51,7 @@ pipeline {
                         branch 'npd'
                     }
                 }
+            }
             steps {
                 sh '''
                 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
@@ -59,7 +60,6 @@ pipeline {
                 '''
                 }
             }
-        }
 
         stage('TF plan') {
             when {
