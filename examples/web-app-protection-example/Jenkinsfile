@@ -44,10 +44,12 @@ pipeline {
         }
         stage('TF plan') {
             when {
-              anyOf {
-                  branch 'dev'
-                  branch 'prd'
-                  branch 'npd'
+                not {
+                    anyOf {
+                        branch 'dev'
+                        branch 'prd'
+                        branch 'npd'
+                    }
                 }
             }
             steps {
