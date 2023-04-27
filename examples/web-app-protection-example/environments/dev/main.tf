@@ -40,7 +40,7 @@ data "template_file" "startup_script" {
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## NETWORKS
-## Modules created for configuring networks used in two different regions.
+## Modules created for configuring networks used in two different regions...
 ## ---------------------------------------------------------------------------------------------------------------------
 
 module "network_mig_r1" {
