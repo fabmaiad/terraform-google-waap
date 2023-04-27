@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+## ---------------------------------------------------------------------------------------------------------------------
+## STARTUP SCRIPT
+## Installs and configures the application in the backends.
+## ---------------------------------------------------------------------------------------------------------------------
+
 data "template_file" "startup_script" {
   template = <<EOT
     #!/bin/bash
@@ -32,6 +37,11 @@ data "template_file" "startup_script" {
     docker run -d -p 80:3000 bkimminich/juice-shop
     EOT
 }
+
+## ---------------------------------------------------------------------------------------------------------------------
+## NETWORKS
+## Modules created for configuring networks used in two different regions.
+## ---------------------------------------------------------------------------------------------------------------------
 
 module "network_mig_r1" {
   source = "../../../../modules/mig_network"
@@ -55,34 +65,37 @@ module "network_mig_r2" {
   subnet_region = var.subnet_region_r2
 }
 
+## ---------------------------------------------------------------------------------------------------------------------
+## MIGs
+## Creation of templates and configuration of MIGs.
+## ---------------------------------------------------------------------------------------------------------------------
+
 module "mig_r1" {
   source = "../../../../modules/mig"
 
-  # VM Template
-  project_id   = var.project_id
-  region       = var.region_r1
-  name_prefix  = var.name_prefix_r1
-  machine_type = var.machine_type_r1
-  tags         = var.tags_r1
+  project_id          = var.project_id
+  region              = var.region_r1
+  name_prefix         = var.name_prefix_r1
+  machine_type        = var.machine_type_r1
+  tags                = var.tags_r1
 
-  source_image = var.source_image_r1
-  disk_size_gb = var.disk_size_gb_r1
+  source_image        = var.source_image_r1
+  disk_size_gb        = var.disk_size_gb_r1
 
-  service_account = var.service_account_id_r1
-  roles           = var.service_account_roles_r1
-  scopes          = var.service_account_scopes_r1
+  service_account     = var.service_account_id_r1
+  roles               = var.service_account_roles_r1
+  scopes              = var.service_account_scopes_r1
 
-  startup_script = data.template_file.startup_script.rendered
+  startup_script      = data.template_file.startup_script.rendered
 
-  network    = var.network_name_r1
-  subnetwork = var.subnet_name_r1
+  network             = var.network_name_r1
+  subnetwork          = var.subnet_name_r1
 
-  # Managed Instance Group
-  mig_name           = var.mig_name_r1
-  base_instance_name = var.base_instance_name_r1
-  zone               = var.zone_r1
+  mig_name            = var.mig_name_r1
+  base_instance_name  = var.base_instance_name_r1
+  zone                = var.zone_r1
 
-  target_size = var.target_size_r1
+  target_size         = var.target_size_r1
 
   depends_on = [
     module.network_mig_r1
@@ -92,53 +105,52 @@ module "mig_r1" {
 module "mig_r2" {
   source = "../../../../modules/mig"
 
-  # VM Template
-  project_id   = var.project_id
-  region       = var.region_r2
-  name_prefix  = var.name_prefix_r2
-  machine_type = var.machine_type_r2
-  tags         = var.tags_r2
+  project_id          = var.project_id
+  region              = var.region_r2
+  name_prefix         = var.name_prefix_r2
+  machine_type        = var.machine_type_r2
+  tags                = var.tags_r2
 
-  source_image = var.source_image_r2
-  disk_size_gb = var.disk_size_gb_r2
+  source_image        = var.source_image_r2
+  disk_size_gb        = var.disk_size_gb_r2
 
-  service_account = var.service_account_id_r2
-  roles           = var.service_account_roles_r2
-  scopes          = var.service_account_scopes_r2
+  service_account     = var.service_account_id_r2
+  roles               = var.service_account_roles_r2
+  scopes              = var.service_account_scopes_r2
 
-  startup_script = data.template_file.startup_script.rendered
+  startup_script      = data.template_file.startup_script.rendered
 
-  network    = var.network_name_r2
-  subnetwork = var.subnet_name_r2
+  network             = var.network_name_r2
+  subnetwork          = var.subnet_name_r2
 
-  # Managed Instance Group
-  mig_name           = var.mig_name_r2
-  base_instance_name = var.base_instance_name_r2
-  zone               = var.zone_r2
+  mig_name            = var.mig_name_r2
+  base_instance_name  = var.base_instance_name_r2
+  zone                = var.zone_r2
 
-  target_size = var.target_size_r2
+  target_size         = var.target_size_r2
 
   depends_on = [
     module.network_mig_r2
   ]
 }
 
-# Cloud Armor
-resource "google_recaptcha_enterprise_key" "primary" {
-  display_name = "web_recaptcha"
+## ---------------------------------------------------------------------------------------------------------------------
+## RECAPTCHA
+## Score Recaptcha Configuration.
+## ---------------------------------------------------------------------------------------------------------------------
 
-  project = var.project_id
+resource "google_recaptcha_enterprise_key" "primary" {
+  display_name        = "web_recaptcha"
+  project             = var.project_id
 
   testing_options {
-    testing_challenge = "NOCAPTCHA"
     testing_score     = 0.5
   }
 
   web_settings {
-    integration_type              = "CHECKBOX"
-    allow_all_domains             = true
-    allowed_domains               = []
-    challenge_security_preference = "USABILITY"
+    integration_type  = "SCORE"
+    allow_all_domains = true
+    allow_amp_traffic = false 
   }
 }
 
@@ -146,26 +158,32 @@ resource "random_id" "suffix" {
   byte_length = 4
 }
 
+## ---------------------------------------------------------------------------------------------------------------------
+## CLOUD ARMOR
+## Backend Policy configuration with owasp rules.
+## ---------------------------------------------------------------------------------------------------------------------
+
 module "cloud-armor" {
   source  = "GoogleCloudPlatform/cloud-armor/google"
   version = "0.3.0"
 
-  project_id                           = var.project_id
-  name                                 = "ca-policy-${random_id.suffix.hex}"
-  description                          = "Cloud Armor security policy with preconfigured rules, security rules and custom rules"
-  default_rule_action                  = "allow"
-  type                                 = "CLOUD_ARMOR"
-  layer_7_ddos_defense_enable          = true
-  layer_7_ddos_defense_rule_visibility = "STANDARD"
+  project_id                            = var.project_id
+  name                                  = "ca-policy-${random_id.suffix.hex}"
+  description                           = "Cloud Armor Security Policy with preconfigured rules, security rules and custom rules"
+  default_rule_action                   = "allow"
+  type                                  = "CLOUD_ARMOR"
+  layer_7_ddos_defense_enable           = true
+  layer_7_ddos_defense_rule_visibility  = "STANDARD"
 
-  recaptcha_redirect_site_key = google_recaptcha_enterprise_key.primary.name
+  recaptcha_redirect_site_key           = google_recaptcha_enterprise_key.primary.name
 
   pre_configured_rules = {
     "sqli_sensitivity_level_1" = {
-      action          = "deny(502)"
-      priority        = 1
-      target_rule_set = "sqli-v33-stable"
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9000
+      description         = "Block SQL Injection"
+      target_rule_set     = "sqli-v33-stable"
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -173,13 +191,12 @@ module "cloud-armor" {
     }
 
     "xss-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 2
-      description       = "XSS Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "xss-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9005
+      description         = "Block XSS"
+      target_rule_set     = "xss-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -187,13 +204,12 @@ module "cloud-armor" {
     }
 
     "lfi-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 3
-      description       = "LFI Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "lfi-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9010
+      description         = "Block Local File Inclusion"
+      target_rule_set     = "lfi-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -201,13 +217,12 @@ module "cloud-armor" {
     }
 
     "rfi-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 4
-      description       = "RFI Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "rfi-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9015
+      description         = "Block Remote File Inclusion"
+      target_rule_set     = "rfi-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -215,13 +230,12 @@ module "cloud-armor" {
     }
 
     "methodenforcement-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 5
-      description       = "Method Enforcement Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "methodenforcement-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9020
+      description         = "Block Method Enforcement"
+      target_rule_set     = "methodenforcement-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -229,13 +243,12 @@ module "cloud-armor" {
     }
 
     "rce-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 6
-      description       = "RCE Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "rce-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9025
+      description         = "Block Remote Code Execution"
+      target_rule_set     = "rce-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -243,13 +256,12 @@ module "cloud-armor" {
     }
 
     "protocolattack-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 7
-      description       = "Protocol Attack Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "protocolattack-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9030
+      description         = "Block Protocol Attack"
+      target_rule_set     = "protocolattack-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -257,13 +269,12 @@ module "cloud-armor" {
     }
 
     "scannerdetection-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 8
-      description       = "Scanner Detection Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "scannerdetection-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9035
+      description         = "Block Scanner Detection"
+      target_rule_set     = "scannerdetection-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -271,13 +282,12 @@ module "cloud-armor" {
     }
 
     "php-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 9
-      description       = "Php Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "php-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9040
+      description         = "Block PHP Injection Attack"
+      target_rule_set     = "php-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -285,79 +295,56 @@ module "cloud-armor" {
     }
 
     "sessionfixation-stable_level_1" = {
-      action            = "deny(502)"
-      priority          = 10
-      description       = "Session Fixation Sensitivity Level 1"
-      preview           = true
-      target_rule_set   = "sessionfixation-v33-stable"
-      sensitivity_level = 1
-      rate_limit_options = {
+      action              = "deny(403)"
+      priority            = 9045
+      description         = "Block Session Fixation Attack"
+      target_rule_set     = "sessionfixation-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
       }
     }
   }
-}
-resource "google_compute_security_policy" "policy_edge" {
-  project   = var.project_id
-  name      = "ca-edge-${random_id.suffix.hex}"
-  type      = "CLOUD_ARMOR_EDGE"
-
-  rule {
-    action   = "allow"
-    priority = "11"
-    match {
-      versioned_expr = "SRC_IPS_V1"
-      config {
-        src_ip_ranges = ["35.191.0.0/16"]
-      }
-    }
-    description = "Allow access to IPs in 35.191.0.0/16"
-  }
-  rule {
-    action        = "deny(403)"
-    priority      = "12"
-    description   = "default rule"
-    match {
-      expr {
-        expression    = "origin.region_code == 'BR'"
-      }
+  security_rules = {
+    "deny_specifig_ip" = {
+      action        = "deny(403)"
+      priority      = 7000
+      description   = "Deny Specific IP address"
+      src_ip_ranges = ["85.172.66.254/32"]
     }
   }
 
-  rule {
-    action   = "allow"
-    priority = "2147483647"
-    match {
-      versioned_expr = "SRC_IPS_V1"
-      config {
-        src_ip_ranges = ["*"]
-      }
+  custom_rules = {
+    "deny_specific_region" = {
+      action      = "deny(403)"
+      priority    = 7005
+      description = "Deny specific Region"
+      expression  = "origin.region_code == 'US'"
     }
-    description = "default rule"
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
-# LB
+## ---------------------------------------------------------------------------------------------------------------------
+## LOAD BALANCER
+## Configuration of the Load Balancer and its resources.
+## ---------------------------------------------------------------------------------------------------------------------
+
 module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
   version = "8.0.0"
 
-  name        = "lb-web-app"
-  project     = var.project_id
-  target_tags = ["backend-r1", "backend-r2"]
+  name                  = "lb-web-app"
+  project               = var.project_id
+  target_tags           = ["backend-r1", "backend-r2"]
 
-  firewall_networks    = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
-  firewall_projects    = [var.project_id, var.project_id]
-  use_ssl_certificates = false
-  ssl                  = false
-  https_redirect       = false
-  quic                 = true
+  firewall_networks     = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
+  firewall_projects     = [var.project_id, var.project_id]
+  use_ssl_certificates  = false
+  ssl                   = false
+  https_redirect        = false
+  quic                  = true
 
   backends = {
     default = {
@@ -370,9 +357,7 @@ module "lb-http" {
       enable_cdn                      = var.enable_cdn
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
-      #security_policy                 = module.cloud-armor.policy.name
-      security_policy                 = google_compute_security_policy.policy_edge.id
-      #edge_security_policy            = google_compute_security_policy.policy_edge.id
+      security_policy                 = module.cloud-armor.policy.name
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
@@ -426,7 +411,6 @@ module "lb-http" {
           max_connections              = null
           max_connections_per_instance = null
           max_connections_per_endpoint = null
-
           max_rate              = 10
           max_rate_per_instance = null
           max_rate_per_endpoint = null
