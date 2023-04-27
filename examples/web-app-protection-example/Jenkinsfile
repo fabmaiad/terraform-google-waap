@@ -42,7 +42,7 @@ pipeline {
                 '''
             }
         }
-        stage('TF plan') {
+        stage('TF Plan ALL') {
             when {
                 not {
                     anyOf {
@@ -51,7 +51,24 @@ pipeline {
                         branch 'npd'
                     }
                 }
+            steps {
+                sh '''
+                export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
+                cd ${WORKSPACE}/examples/${EXAMPLE_BUILD}
+                ./jenkins-functions.sh plan_validate_all $BRANCH_NAME
+                '''
+                }
             }
+        }
+
+        stage('TF plan') {
+            when {
+                anyOf {
+                      branch 'dev'
+                      branch 'prd'
+                      branch 'npd'
+                    }
+                }
             steps {
                 sh '''
                 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
