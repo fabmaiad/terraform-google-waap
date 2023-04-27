@@ -33,6 +33,9 @@ data "template_file" "startup_script" {
     EOT
 }
 
+/***************************
+**** Module MIG Network ****
+****************************/
 module "network_mig_r1" {
   source = "../../../../modules/mig_network"
 
@@ -55,10 +58,12 @@ module "network_mig_r2" {
   subnet_region = var.subnet_region_r2
 }
 
+/*******************
+**** Module MIG ****
+*******************/
+
 module "mig_r1" {
   source = "../../../../modules/mig"
-
-  # VM Template
   project_id   = var.project_id
   region       = var.region_r1
   name_prefix  = var.name_prefix_r1
@@ -123,7 +128,9 @@ module "mig_r2" {
   ]
 }
 
-# Cloud Armor
+/********************
+**** Cloud Armor ****
+*********************/
 resource "google_recaptcha_enterprise_key" "primary" {
   display_name = "web_recaptcha"
 
@@ -370,9 +377,7 @@ module "lb-http" {
       enable_cdn                      = var.enable_cdn
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
-      #security_policy                 = module.cloud-armor.policy.name
-      security_policy                 = google_compute_security_policy.policy_edge.id
-      #edge_security_policy            = google_compute_security_policy.policy_edge.id
+      security_policy                 = module.cloud-armor.policy.name
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
