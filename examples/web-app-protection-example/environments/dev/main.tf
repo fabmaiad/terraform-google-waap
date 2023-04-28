@@ -170,7 +170,7 @@ resource "google_compute_security_policy" "edge_policy" {
 
   rule {
     action      = "allow"
-    escription  = "Default rule, higher priority overrides it"
+    description  = "Default rule, higher priority overrides it"
     priority    = 2147483647
     match {
       versioned_expr  = "SRC_IPS_V1"
