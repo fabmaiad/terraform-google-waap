@@ -448,19 +448,19 @@ module "lb-http" {
           max_rate_per_endpoint = null
           max_utilization       = 0.9
         },
-        # {
-        #   group                        = module.mig_r2.instance_group
-        #   balancing_mode               = "UTILIZATION"
-        #   capacity_scaler              = null
-        #   description                  = null
-        #   max_connections              = null
-        #   max_connections_per_instance = null
-        #   max_connections_per_endpoint = null
-        #   max_rate                     = 10
-        #   max_rate_per_instance        = null
-        #   max_rate_per_endpoint        = null
-        #   max_utilization              = 0.9
-        # },
+        {
+          group                        = module.mig_r2.instance_group
+          balancing_mode               = "UTILIZATION"
+          capacity_scaler              = null
+          description                  = null
+          max_connections              = null
+          max_connections_per_instance = null
+          max_connections_per_endpoint = null
+          max_rate                     = 10
+          max_rate_per_instance        = null
+          max_rate_per_endpoint        = null
+          max_utilization              = 0.9
+        },
       ]
 
       iap_config = {
