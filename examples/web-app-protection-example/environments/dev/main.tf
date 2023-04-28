@@ -164,9 +164,10 @@ resource "random_id" "suffix" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_compute_security_policy" "edge_policy" {
-  project   = var.project_id
-  name      = "edge-policy-${random_id.suffix.hex}"
-  type      = "CLOUD_ARMOR_EDGE"
+  project       = var.project_id
+  name          = "edge-policy-${random_id.suffix.hex}"
+  type          = "CLOUD_ARMOR_EDGE"
+  description   = "Edge Security Policy"
 
   rule {
     action      = "allow"
@@ -214,7 +215,7 @@ module "backend_policy" {
 
   project_id                            = var.project_id
   name                                  = "backend-policy-${random_id.suffix.hex}"
-  description                           = "Cloud Armor Security Policy with preconfigured rules, security rules and custom rules"
+  description                           = "Backend Security Policy"
   default_rule_action                   = "allow"
   type                                  = "CLOUD_ARMOR"
   layer_7_ddos_defense_enable           = true
