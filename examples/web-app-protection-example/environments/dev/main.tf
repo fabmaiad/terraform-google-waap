@@ -163,6 +163,51 @@ resource "random_id" "suffix" {
 ## Backend Policy configuration with owasp rules.
 ## ---------------------------------------------------------------------------------------------------------------------
 
+resource "google_compute_security_policy" "edge_policy" {
+  project   = var.project_id
+  name      = "ca-edge-${random_id.suffix.hex}"
+  type      = "CLOUD_ARMOR_EDGE"
+
+  rule {
+    action      = "allow"
+    escription  = "Default rule, higher priority overrides it"
+    priority    = 2147483647
+    match {
+      versioned_expr  = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+  }
+
+  rule {
+    action        = "deny(403)"
+    description   = "Deny Specific IP address"
+    priority      = 7000
+    
+    match {
+      versioned_expr  = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["85.172.66.254/32"]
+      }
+    }
+  }
+
+  rule {
+    action        = "deny(403)"
+    priority      = 7005
+    description   = "Deny specific Region"
+    match {
+      expr {
+        expression    = "origin.region_code == 'US'"
+      }
+    }
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 module "cloud-armor" {
   source  = "GoogleCloudPlatform/cloud-armor/google"
   version = "0.3.0"
@@ -332,8 +377,10 @@ module "cloud-armor" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 module "lb-http" {
-  source  = "GoogleCloudPlatform/lb-http/google"
-  version = "8.0.0"
+  # source  = "GoogleCloudPlatform/lb-http/google"
+  # version = "8.0.0"
+
+  source = "github.com/terraform-google-modules/terraform-google-lb-http?ref=main"
 
   name                  = "lb-web-app"
   project               = var.project_id
@@ -358,6 +405,7 @@ module "lb-http" {
       connection_draining_timeout_sec = null
       compression_mode                = "AUTOMATIC"
       security_policy                 = module.cloud-armor.policy.name
+      edge_security_policy            = google_compute_security_policy.edge_policy.id
       session_affinity                = null
       affinity_cookie_ttl_sec         = null
       custom_request_headers          = null
