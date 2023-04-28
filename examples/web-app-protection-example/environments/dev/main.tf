@@ -200,7 +200,7 @@ resource "google_compute_security_policy" "edge_policy" {
     description   = "Deny Specific Region"
     match {
       expr {
-        expression    = "origin.region_code == 'US'"
+        expression    = "origin.region_code == 'BR'"
       }
     }
   }
