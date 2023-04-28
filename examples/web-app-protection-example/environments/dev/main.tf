@@ -102,37 +102,41 @@ module "mig_r1" {
   ]
 }
 
-# module "mig_r2" {
-#   source = "../../../../modules/mig"
+module "mig_r2" {
+  source = "../../../../modules/mig"
 
-#   project_id          = var.project_id
-#   region              = var.region_r2
-#   name_prefix         = var.name_prefix_r2
-#   machine_type        = var.machine_type_r2
-#   tags                = var.tags_r2
+  project_id          = var.project_id
+  region              = var.region_r2
+  name_prefix         = var.name_prefix_r2
+  machine_type        = var.machine_type_r2
+  tags                = var.tags_r2
 
-#   source_image        = var.source_image_r2
-#   disk_size_gb        = var.disk_size_gb_r2
+  source_image        = var.source_image_r2
+  disk_size_gb        = var.disk_size_gb_r2
 
-#   service_account     = var.service_account_id_r2
-#   roles               = var.service_account_roles_r2
-#   scopes              = var.service_account_scopes_r2
+  service_account     = var.service_account_id_r2
+  roles               = var.service_account_roles_r2
+  scopes              = var.service_account_scopes_r2
 
-#   startup_script      = data.template_file.startup_script.rendered
+  startup_script      = data.template_file.startup_script.rendered
 
-#   network             = var.network_name_r2
-#   subnetwork          = var.subnet_name_r2
+  network             = var.network_name_r2
+  subnetwork          = var.subnet_name_r2
 
-#   mig_name            = var.mig_name_r2
-#   base_instance_name  = var.base_instance_name_r2
-#   zone                = var.zone_r2
+  mig_name            = var.mig_name_r2
+  base_instance_name  = var.base_instance_name_r2
+  zone                = var.zone_r2
 
-#   target_size         = var.target_size_r2
+  target_size         = var.target_size_r2
 
-#   depends_on = [
-#     module.network_mig_r2
-#   ]
-# }
+  depends_on = [
+    module.network_mig_r2
+  ]
+
+  lifecycle = {
+    create_before_destroy = true
+  }
+}
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## RECAPTCHA
