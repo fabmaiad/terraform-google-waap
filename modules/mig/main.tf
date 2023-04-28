@@ -82,4 +82,8 @@ resource "google_compute_instance_group_manager" "mig" {
     name = var.port_name
     port = var.backend_port
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
