@@ -352,23 +352,6 @@ module "backend_policy" {
       }
     }
   }
-  security_rules = {
-    "deny_specifig_ip" = {
-      action        = "deny(403)"
-      priority      = 7000
-      description   = "Deny Specific IP address"
-      src_ip_ranges = ["85.172.66.254/32"]
-    }
-  }
-
-  custom_rules = {
-    "deny_specific_region" = {
-      action      = "deny(403)"
-      priority    = 7005
-      description = "Deny specific Region"
-      expression  = "origin.region_code == 'US'"
-    }
-  }
 }
 
 ## ---------------------------------------------------------------------------------------------------------------------
