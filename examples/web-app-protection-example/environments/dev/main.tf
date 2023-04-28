@@ -380,7 +380,7 @@ module "lb-http" {
   # source  = "GoogleCloudPlatform/lb-http/google"
   # version = "8.0.0"
 
-  source = "github.com/terraform-google-modules/terraform-google-lb-http?ref=main"
+  source = "github.com/terraform-google-modules/terraform-google-lb-http?ref=master"
 
   name                  = "lb-web-app"
   project               = var.project_id
