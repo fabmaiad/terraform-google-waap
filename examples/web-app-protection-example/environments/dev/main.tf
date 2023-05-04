@@ -355,7 +355,7 @@ module "backend_policy" {
 
     "java-stable_level_1" = {
       action              = "deny(403)"
-      priority            = 9045
+      priority            = 9050
       description         = "Block Java Attack"
       target_rule_set     = "java-v33-stable"
       sensitivity_level   = 1
@@ -368,7 +368,7 @@ module "backend_policy" {
 
     "nodejs-stable_level_1" = {
       action              = "deny(403)"
-      priority            = 9045
+      priority            = 9055
       description         = "Block NodeJS Attack"
       target_rule_set     = "nodejs-v33-stable"
       sensitivity_level   = 1
