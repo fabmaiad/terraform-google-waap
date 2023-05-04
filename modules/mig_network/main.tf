@@ -65,5 +65,5 @@ resource "google_compute_firewall" "inbound-ip-ssh" {
   source_ranges = [
     "35.235.240.0/20"
   ]
-  destination_tags = ["allow-ssh-iap"]
+  target_tags = ["allow-ssh-iap"]
 }
