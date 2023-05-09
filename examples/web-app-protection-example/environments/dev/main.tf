@@ -102,7 +102,7 @@ module "mig_r1" {
   ]
 }
 
-/*module "mig_r2" {
+module "mig_r2" {
   source = "../../../../modules/mig"
 
   project_id          = var.project_id
@@ -132,7 +132,7 @@ module "mig_r1" {
   depends_on = [
     module.network_mig_r2
   ]
-}*/
+}
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## RECAPTCHA
@@ -447,7 +447,7 @@ module "lb-http" {
           max_rate_per_endpoint         = null
           max_utilization               = 0.9
         },
-        /*{
+        {
           group                         = module.mig_r2.instance_group
           balancing_mode                = "UTILIZATION"
           capacity_scaler               = null
@@ -459,7 +459,7 @@ module "lb-http" {
           max_rate_per_instance         = null
           max_rate_per_endpoint         = null
           max_utilization               = 0.9
-        },*/
+        },
       ]
 
       iap_config = {
