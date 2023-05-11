@@ -102,7 +102,7 @@ module "mig_r1" {
   ]
 }
 
-/*module "mig_r2" {
+module "mig_r2" {
   source = "../../../../modules/mig"
 
   project_id          = var.project_id
@@ -132,7 +132,7 @@ module "mig_r1" {
   depends_on = [
     module.network_mig_r2
   ]
-}*/
+}
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## RECAPTCHA
@@ -352,6 +352,34 @@ module "backend_policy" {
         ban_duration_sec                     = 60
       }
     }
+
+    "cve-canary_level_1" = {
+      action              = "deny(403)"
+      priority            = 9045
+      description         = "Fix Log4j Vulnerability"
+      target_rule_set     = "cve-canary"
+      sensitivity_level   = 1
+      rate_limit_options  = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
+    }
+
+    "json-sqli-canary_level_1" = {
+      action              = "deny(403)"
+      priority            = 9045
+      description         = "JSON-based SQL injection bypass vulnerability"
+      target_rule_set     = "json-sqli-canary"
+      sensitivity_level   = 2
+      rate_limit_options  = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
+    }
+
+
   }
 }
 
@@ -447,7 +475,7 @@ module "lb-http" {
           max_rate_per_endpoint         = null
           max_utilization               = 0.9
         },
-        /*{
+        {
           group                         = module.mig_r2.instance_group
           balancing_mode                = "UTILIZATION"
           capacity_scaler               = null
@@ -459,7 +487,7 @@ module "lb-http" {
           max_rate_per_instance         = null
           max_rate_per_endpoint         = null
           max_utilization               = 0.9
-        },*/
+        },
       ]
 
       iap_config = {
