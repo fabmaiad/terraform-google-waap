@@ -352,10 +352,36 @@ module "backend_policy" {
         ban_duration_sec                     = 60
       }
     }
+    
+    "java-stable_level_1" = {
+      action              = "deny(403)"
+      priority            = 9050
+      description         = "Block Java Attack"
+      target_rule_set     = "java-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
+    }
+    
+    "nodejs-stable_level_1" = {
+      action              = "deny(403)"
+      priority            = 9055
+      description         = "Block NodeJS Attack"
+      target_rule_set     = "nodejs-v33-stable"
+      sensitivity_level   = 1
+      rate_limit_options  = {
+        rate_limit_http_request_count        = 100
+        rate_limit_http_request_interval_sec = 10
+        ban_duration_sec                     = 60
+      }
+    }
 
     "cve-canary_level_1" = {
       action              = "deny(403)"
-      priority            = 9045
+      priority            = 9060
       description         = "Fix Log4j Vulnerability"
       target_rule_set     = "cve-canary"
       sensitivity_level   = 1
@@ -366,9 +392,9 @@ module "backend_policy" {
       }
     }
 
-    "json-sqli-canary_level_1" = {
+    "json-sqli-canary_level_2" = {
       action              = "deny(403)"
-      priority            = 9045
+      priority            = 9065
       description         = "JSON-based SQL injection bypass vulnerability"
       target_rule_set     = "json-sqli-canary"
       sensitivity_level   = 2
@@ -378,8 +404,6 @@ module "backend_policy" {
         ban_duration_sec                     = 60
       }
     }
-
-
   }
 }
 
