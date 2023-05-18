@@ -53,14 +53,20 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
-                cd ${WORKSPACE}/examples/${EXAMPLE_BUILD}
-                ./jenkins-functions.sh plan_validate_all $BRANCH_NAME
-                '''
+                def environments = ['dev', 'prd', 'npd']
+
+                for (def env in environments){
+                    def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/enviroments/${env}"
+                    echo "Terraform planning ${env} enviroment..."
+                    
+                    dir(environmentPath) {
+                        sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
+                        sh 'cp -Prf ../../*.tf'                                        /* common terraform files */
+                        sh './jenkins-functions.sh plan_validate_all $BRANCH_NAME'
+                    }
                 }
             }
-
+        }
         stage('TF plan') {
             when {
                 anyOf {
