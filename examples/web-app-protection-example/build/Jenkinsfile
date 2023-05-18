@@ -53,16 +53,18 @@ pipeline {
                 }
             }
             steps {
-                def environments = ['dev', 'prd', 'npd']
+                script {
+                    def environments = ['dev', 'prd', 'npd']
 
-                for (def env in environments){
-                    def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/enviroments/${env}"
-                    echo "Terraform planning ${env} enviroment..."
-                    
-                    dir(environmentPath) {
-                        sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
-                        sh 'cp -Prf ../../*.tf'                                        /* common terraform files */
-                        sh './jenkins-functions.sh plan_validate_all $BRANCH_NAME'
+                    for (def env in environments) {
+                        def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/enviroments/${env}"
+                        echo "Terraform planning ${env} enviroment..."
+
+                        dir(environmentPath) {
+                            sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
+                            sh 'cp -Prf ../../*.tf'                                        /* common terraform files */
+                            sh '../../build/jenkins-functions.sh plan_validate_all $BRANCH_NAME'
+                        }
                     }
                 }
             }
