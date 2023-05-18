@@ -62,7 +62,7 @@ pipeline {
 
                         dir(environmentPath) {
                             sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
-                            sh 'cp -Prf ../../*.tf'                                        /* common terraform files */
+                            sh 'cp -Prf ../../*.tf .'                                        /* common terraform files */
                             sh '../../build/jenkins-functions.sh plan_validate_all $BRANCH_NAME'
                         }
                     }
