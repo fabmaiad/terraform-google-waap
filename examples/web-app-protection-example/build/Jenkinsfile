@@ -57,7 +57,7 @@ pipeline {
                     def environments = ['dev', 'prd', 'npd']
 
                     for (def env in environments) {
-                        def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/enviroments/${env}"
+                        def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/environments/${env}"
                         echo "Terraform planning ${env} enviroment..."
 
                         dir(environmentPath) {
