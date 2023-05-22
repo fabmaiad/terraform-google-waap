@@ -58,12 +58,12 @@ pipeline {
 
                     for (def env in environments) {
                         def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/environments/${env}"
-                        echo "Terraform planning ${env} enviroment..."
+                        echo "Terraform planning ${env} environment..."
 
                         dir(environmentPath) {
                             sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
                             sh 'cp -Prf ../../*.tf .'                                        /* common terraform files */
-                            sh '../../build/jenkins-functions.sh plan_validate_all $BRANCH_NAME'
+                            sh '../../build/jenkins-functions.sh plan_validate_all ${env}' /*!TODO: Corrigir variavel apra env */
                         }
                     }
                 }
