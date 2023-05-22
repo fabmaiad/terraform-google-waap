@@ -55,7 +55,7 @@ pipeline {
             steps {
                 sh '''
                 export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
-                cd ${WORKSPACE}/examples/${EXAMPLE_BUILD} ; cp -Prf *.tf environments/{dev,prd,npd}
+                cd ${WORKSPACE}/examples/${EXAMPLE_BUILD} ; cp -Prf *.tf environments/dev environments/prd environments/npd
                 build/jenkins-functions.sh plan_validate_all $BRANCH_NAME
                 '''
                 }
