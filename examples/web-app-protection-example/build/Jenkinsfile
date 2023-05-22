@@ -63,8 +63,8 @@ pipeline {
                         dir(environmentPath) {
                             sh '''
                             export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
-                            sh cp -Prf ../../*.tf .
-                            sh ../../build/jenkins-functions.sh plan_validate_all ''' +env+ '''
+                            cp -Prf ../../*.tf .
+                            ../../build/jenkins-functions.sh plan_validate_all ''' +env+ '''
                             '''
                         }
                     }
