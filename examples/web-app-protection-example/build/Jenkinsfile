@@ -61,9 +61,11 @@ pipeline {
                         echo "Terraform planning ${env} environment..."
 
                         dir(environmentPath) {
-                            sh 'export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}' /* Service Account for terraform */
-                            sh 'cp -Prf ../../*.tf .'                                        /* common terraform files */
-                            sh '../../build/jenkins-functions.sh plan_validate_all """$env"""' /*!TODO: Corrigir variavel apra env */
+                            sh '''
+                            export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
+                            sh cp -Prf ../../*.tf .
+                            sh ../../build/jenkins-functions.sh plan_validate_all ''' +env+ '''
+                            '''
                         }
                     }
                 }
