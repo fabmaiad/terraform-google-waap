@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 # Copyright 2022 Google LLC
 #
@@ -90,9 +90,7 @@ tf_plan_validate_all() {
     component="$(basename "$component_path")"
     find "$component_path" -mindepth 1 -maxdepth 1 -type d | while read -r env_path ; do
       env="$(basename "$env_path")"
-      echo "estou na linha 93"
       if [[ "$env" =~ $environments_regex ]] ; then
-        echo "estou na linha 95"
         tf_init "$env_path" "$env" "$component"
         tf_plan "$env_path" "$env" "$component"
         # tf_validate "$env_path" "$env" "$policysource" "$component" # !TODO
