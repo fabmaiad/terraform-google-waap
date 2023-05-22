@@ -89,7 +89,7 @@ tf_plan_validate_all() {
   -not -path "$base_dir/.terraform" | while read -r component_path ; do
     component="$(basename "$component_path")"
     echo "estou na linha 90"
-    find "$component_path" -mindepth 1 -maxdepth 1 -type d | while read -r env_path ; do
+    find ./environments -mindepth 1 -maxdepth 1 -type d | while read -r env_path ; do
       env="$(basename "$env_path")"
       echo "estou na linha 93"
       if [[ "$env" =~ $environments_regex ]] ; then
