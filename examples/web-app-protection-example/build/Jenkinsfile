@@ -57,13 +57,13 @@ pipeline {
                     def environments = ['dev', 'prd', 'npd']
 
                     for (def env in environments) {
-                        def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/environments/"
+                        def environmentPath = "${WORKSPACE}/examples/${EXAMPLE_BUILD}/"
                         echo "Terraform planning ${env} environment..."
 
                         dir(environmentPath) {
                             sh '''
                             export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=${_TF_SA_EMAIL}
-                            cp -Prf ../*.tf ''' +env+ '''/
+                            cp -Prf ../*.tf environments/''' +env+ '''/
                             ../build/jenkins-functions.sh plan_validate_all ''' +env+ '''
                             '''
                         }
