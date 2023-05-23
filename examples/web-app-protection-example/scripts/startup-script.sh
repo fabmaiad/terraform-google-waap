@@ -16,5 +16,5 @@ sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plug
 # docker run -d -p 80:3000 bkimminich/juice-shop
 
 ## Code to deploy Hello World 
-docker pull crccheck/hello-world
-docker run -d -p 80:8000 crccheck/hello-world
+# docker pull crccheck/hello-world
+# docker run -d -p 80:8000 crccheck/hello-world
