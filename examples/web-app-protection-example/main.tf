@@ -432,8 +432,8 @@ module "lb-http" {
 
       health_check = {
 
-        check_interval_sec  = 120
-        timeout_sec         = 120
+        check_interval_sec  = 60
+        timeout_sec         = 60
         healthy_threshold   = 2
         unhealthy_threshold = 2
         request_path        = "/"
