@@ -10,8 +10,11 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-#docker pull bkimminich/juice-shop
-#docker run -d -p 80:3000 bkimminich/juice-shop
 
-docker pull crccheck/hello-world
-docker run -d -p 80:8000 crccheck/hello-world
+## Code to deploy Juice Shop
+# docker pull bkimminich/juice-shop
+# docker run -d -p 80:3000 bkimminich/juice-shop
+
+## Code to deploy Hello World 
+# docker pull crccheck/hello-world
+# docker run -d -p 80:8000 crccheck/hello-world
