@@ -58,29 +58,29 @@ module "network_mig_r2" {
 module "mig_r1" {
   source = "../../modules/mig"
 
-  project_id          = var.project_id
-  region              = var.region_r1
-  name_prefix         = var.name_prefix_r1
-  machine_type        = var.machine_type_r1
-  tags                = var.tags_r1
+  project_id   = var.project_id
+  region       = var.region_r1
+  name_prefix  = var.name_prefix_r1
+  machine_type = var.machine_type_r1
+  tags         = var.tags_r1
 
-  source_image        = var.source_image_r1
-  disk_size_gb        = var.disk_size_gb_r1
+  source_image = var.source_image_r1
+  disk_size_gb = var.disk_size_gb_r1
 
-  service_account     = var.service_account_id_r1
-  roles               = var.service_account_roles_r1
-  scopes              = var.service_account_scopes_r1
+  service_account = var.service_account_id_r1
+  roles           = var.service_account_roles_r1
+  scopes          = var.service_account_scopes_r1
 
-  startup_script      = data.template_file.startup_script.rendered
+  startup_script = data.template_file.startup_script.rendered
 
-  network             = var.network_name_r1
-  subnetwork          = var.subnet_name_r1
+  network    = var.network_name_r1
+  subnetwork = var.subnet_name_r1
 
-  mig_name            = var.mig_name_r1
-  base_instance_name  = var.base_instance_name_r1
-  zone                = var.zone_r1
+  mig_name           = var.mig_name_r1
+  base_instance_name = var.base_instance_name_r1
+  zone               = var.zone_r1
 
-  target_size         = var.target_size_r1
+  target_size = var.target_size_r1
 
   depends_on = [
     module.network_mig_r1
@@ -90,29 +90,29 @@ module "mig_r1" {
 module "mig_r2" {
   source = "../../modules/mig"
 
-  project_id          = var.project_id
-  region              = var.region_r2
-  name_prefix         = var.name_prefix_r2
-  machine_type        = var.machine_type_r2
-  tags                = var.tags_r2
+  project_id   = var.project_id
+  region       = var.region_r2
+  name_prefix  = var.name_prefix_r2
+  machine_type = var.machine_type_r2
+  tags         = var.tags_r2
 
-  source_image        = var.source_image_r2
-  disk_size_gb        = var.disk_size_gb_r2
+  source_image = var.source_image_r2
+  disk_size_gb = var.disk_size_gb_r2
 
-  service_account     = var.service_account_id_r2
-  roles               = var.service_account_roles_r2
-  scopes              = var.service_account_scopes_r2
+  service_account = var.service_account_id_r2
+  roles           = var.service_account_roles_r2
+  scopes          = var.service_account_scopes_r2
 
-  startup_script      = data.template_file.startup_script.rendered
+  startup_script = data.template_file.startup_script.rendered
 
-  network             = var.network_name_r2
-  subnetwork          = var.subnet_name_r2
+  network    = var.network_name_r2
+  subnetwork = var.subnet_name_r2
 
-  mig_name            = var.mig_name_r2
-  base_instance_name  = var.base_instance_name_r2
-  zone                = var.zone_r2
+  mig_name           = var.mig_name_r2
+  base_instance_name = var.base_instance_name_r2
+  zone               = var.zone_r2
 
-  target_size         = var.target_size_r2
+  target_size = var.target_size_r2
 
   depends_on = [
     module.network_mig_r2
@@ -125,17 +125,17 @@ module "mig_r2" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_recaptcha_enterprise_key" "primary" {
-  display_name        = "web_recaptcha"
-  project             = var.project_id
+  display_name = "web_recaptcha"
+  project      = var.project_id
 
   testing_options {
-    testing_score     = 0.5
+    testing_score = 0.5
   }
 
   web_settings {
     integration_type  = "SCORE"
     allow_all_domains = true
-    allow_amp_traffic = false 
+    allow_amp_traffic = false
   }
 }
 
@@ -149,17 +149,17 @@ resource "random_id" "suffix" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_compute_security_policy" "edge_policy" {
-  project       = var.project_id
-  name          = "edge-policy-${random_id.suffix.hex}"
-  type          = "CLOUD_ARMOR_EDGE"
-  description   = "Edge Security Policy"
+  project     = var.project_id
+  name        = "edge-policy-${random_id.suffix.hex}"
+  type        = "CLOUD_ARMOR_EDGE"
+  description = "Edge Security Policy"
 
   rule {
     action      = "allow"
-    description  = "Default rule, higher priority overrides it"
+    description = "Default rule, higher priority overrides it"
     priority    = 2147483647
     match {
-      versioned_expr  = "SRC_IPS_V1"
+      versioned_expr = "SRC_IPS_V1"
       config {
         src_ip_ranges = ["*"]
       }
@@ -167,12 +167,12 @@ resource "google_compute_security_policy" "edge_policy" {
   }
 
   rule {
-    action        = "deny(403)"
-    description   = "Deny Specific IP address"
-    priority      = 7000
-    
+    action      = "deny(403)"
+    description = "Deny Specific IP address"
+    priority    = 7000
+
     match {
-      versioned_expr  = "SRC_IPS_V1"
+      versioned_expr = "SRC_IPS_V1"
       config {
         src_ip_ranges = ["85.172.66.254/32"]
       }
@@ -180,12 +180,12 @@ resource "google_compute_security_policy" "edge_policy" {
   }
 
   rule {
-    action        = "deny(403)"
-    priority      = 7005
-    description   = "Deny Specific Region"
+    action      = "deny(403)"
+    priority    = 7005
+    description = "Deny Specific Region"
     match {
       expr {
-        expression    = "origin.region_code == 'CH'"
+        expression = "origin.region_code == 'CH'"
       }
     }
   }
@@ -198,23 +198,23 @@ module "backend_policy" {
   source  = "GoogleCloudPlatform/cloud-armor/google"
   version = "0.3.0"
 
-  project_id                            = var.project_id
-  name                                  = "backend-policy-${random_id.suffix.hex}"
-  description                           = "Backend Security Policy"
-  default_rule_action                   = "allow"
-  type                                  = "CLOUD_ARMOR"
-  layer_7_ddos_defense_enable           = true
-  layer_7_ddos_defense_rule_visibility  = "STANDARD"
+  project_id                           = var.project_id
+  name                                 = "backend-policy-${random_id.suffix.hex}"
+  description                          = "Backend Security Policy"
+  default_rule_action                  = "allow"
+  type                                 = "CLOUD_ARMOR"
+  layer_7_ddos_defense_enable          = true
+  layer_7_ddos_defense_rule_visibility = "STANDARD"
 
-  recaptcha_redirect_site_key           = google_recaptcha_enterprise_key.primary.name
+  recaptcha_redirect_site_key = google_recaptcha_enterprise_key.primary.name
 
   pre_configured_rules = {
     "sqli_sensitivity_level_1" = {
-      action              = "deny(403)"
-      priority            = 9000
-      description         = "Block SQL Injection"
-      target_rule_set     = "sqli-v33-stable"
-      rate_limit_options  = {
+      action          = "deny(403)"
+      priority        = 9000
+      description     = "Block SQL Injection"
+      target_rule_set = "sqli-v33-stable"
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -222,12 +222,12 @@ module "backend_policy" {
     }
 
     "xss-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9005
-      description         = "Block XSS"
-      target_rule_set     = "xss-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9005
+      description       = "Block XSS"
+      target_rule_set   = "xss-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -235,12 +235,12 @@ module "backend_policy" {
     }
 
     "lfi-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9010
-      description         = "Block Local File Inclusion"
-      target_rule_set     = "lfi-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9010
+      description       = "Block Local File Inclusion"
+      target_rule_set   = "lfi-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -248,12 +248,12 @@ module "backend_policy" {
     }
 
     "rfi-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9015
-      description         = "Block Remote File Inclusion"
-      target_rule_set     = "rfi-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9015
+      description       = "Block Remote File Inclusion"
+      target_rule_set   = "rfi-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -261,12 +261,12 @@ module "backend_policy" {
     }
 
     "methodenforcement-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9020
-      description         = "Block Method Enforcement"
-      target_rule_set     = "methodenforcement-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9020
+      description       = "Block Method Enforcement"
+      target_rule_set   = "methodenforcement-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -274,12 +274,12 @@ module "backend_policy" {
     }
 
     "rce-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9025
-      description         = "Block Remote Code Execution"
-      target_rule_set     = "rce-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9025
+      description       = "Block Remote Code Execution"
+      target_rule_set   = "rce-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -287,12 +287,12 @@ module "backend_policy" {
     }
 
     "protocolattack-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9030
-      description         = "Block Protocol Attack"
-      target_rule_set     = "protocolattack-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9030
+      description       = "Block Protocol Attack"
+      target_rule_set   = "protocolattack-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -300,12 +300,12 @@ module "backend_policy" {
     }
 
     "scannerdetection-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9035
-      description         = "Block Scanner Detection"
-      target_rule_set     = "scannerdetection-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9035
+      description       = "Block Scanner Detection"
+      target_rule_set   = "scannerdetection-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -313,12 +313,12 @@ module "backend_policy" {
     }
 
     "php-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9040
-      description         = "Block PHP Injection Attack"
-      target_rule_set     = "php-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9040
+      description       = "Block PHP Injection Attack"
+      target_rule_set   = "php-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -326,38 +326,38 @@ module "backend_policy" {
     }
 
     "sessionfixation-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9045
-      description         = "Block Session Fixation Attack"
-      target_rule_set     = "sessionfixation-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9045
+      description       = "Block Session Fixation Attack"
+      target_rule_set   = "sessionfixation-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
       }
     }
-    
+
     "java-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9050
-      description         = "Block Java Attack"
-      target_rule_set     = "java-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9050
+      description       = "Block Java Attack"
+      target_rule_set   = "java-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
       }
     }
-    
+
     "nodejs-stable_level_1" = {
-      action              = "deny(403)"
-      priority            = 9055
-      description         = "Block NodeJS Attack"
-      target_rule_set     = "nodejs-v33-stable"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9055
+      description       = "Block NodeJS Attack"
+      target_rule_set   = "nodejs-v33-stable"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -365,12 +365,12 @@ module "backend_policy" {
     }
 
     "cve-canary_level_1" = {
-      action              = "deny(403)"
-      priority            = 9060
-      description         = "Fix Log4j Vulnerability"
-      target_rule_set     = "cve-canary"
-      sensitivity_level   = 1
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9060
+      description       = "Fix Log4j Vulnerability"
+      target_rule_set   = "cve-canary"
+      sensitivity_level = 1
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -378,12 +378,12 @@ module "backend_policy" {
     }
 
     "json-sqli-canary_level_2" = {
-      action              = "deny(403)"
-      priority            = 9065
-      description         = "JSON-based SQL injection bypass vulnerability"
-      target_rule_set     = "json-sqli-canary"
-      sensitivity_level   = 2
-      rate_limit_options  = {
+      action            = "deny(403)"
+      priority          = 9065
+      description       = "JSON-based SQL injection bypass vulnerability"
+      target_rule_set   = "json-sqli-canary"
+      sensitivity_level = 2
+      rate_limit_options = {
         rate_limit_http_request_count        = 100
         rate_limit_http_request_interval_sec = 10
         ban_duration_sec                     = 60
@@ -401,16 +401,16 @@ module "lb-http" {
   source  = "GoogleCloudPlatform/lb-http/google"
   version = "9.0.0"
 
-  name                  = "lb-web-app"
-  project               = var.project_id
-  target_tags           = concat(var.tags_r1, var.tags_r2)
+  name        = "lb-web-app"
+  project     = var.project_id
+  target_tags = concat(var.tags_r1, var.tags_r2)
 
-  firewall_networks     = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
-  firewall_projects     = [var.project_id, var.project_id]
-  use_ssl_certificates  = false
-  ssl                   = false
-  https_redirect        = false
-  quic                  = true
+  firewall_networks    = [module.network_mig_r1.network_name, module.network_mig_r2.network_name]
+  firewall_projects    = [var.project_id, var.project_id]
+  use_ssl_certificates = false
+  ssl                  = false
+  https_redirect       = false
+  quic                 = true
 
   backends = {
     default = {
@@ -470,30 +470,30 @@ module "lb-http" {
 
       groups = [
         {
-          group                         = module.mig_r1.instance_group
-          balancing_mode                = "UTILIZATION"
-          capacity_scaler               = null
-          description                   = null
-          max_connections               = null
-          max_connections_per_instance  = null
-          max_connections_per_endpoint  = null
-          max_rate                      = 10
-          max_rate_per_instance         = null
-          max_rate_per_endpoint         = null
-          max_utilization               = 0.9
+          group                        = module.mig_r1.instance_group
+          balancing_mode               = "UTILIZATION"
+          capacity_scaler              = null
+          description                  = null
+          max_connections              = null
+          max_connections_per_instance = null
+          max_connections_per_endpoint = null
+          max_rate                     = 10
+          max_rate_per_instance        = null
+          max_rate_per_endpoint        = null
+          max_utilization              = 0.9
         },
         {
-          group                         = module.mig_r2.instance_group
-          balancing_mode                = "UTILIZATION"
-          capacity_scaler               = null
-          description                   = null
-          max_connections               = null
-          max_connections_per_instance  = null
-          max_connections_per_endpoint  = null
-          max_rate                      = 10
-          max_rate_per_instance         = null
-          max_rate_per_endpoint         = null
-          max_utilization               = 0.9
+          group                        = module.mig_r2.instance_group
+          balancing_mode               = "UTILIZATION"
+          capacity_scaler              = null
+          description                  = null
+          max_connections              = null
+          max_connections_per_instance = null
+          max_connections_per_endpoint = null
+          max_rate                     = 10
+          max_rate_per_instance        = null
+          max_rate_per_endpoint        = null
+          max_utilization              = 0.9
         },
       ]
 
