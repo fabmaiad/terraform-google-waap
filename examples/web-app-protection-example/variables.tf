@@ -17,7 +17,7 @@
 variable "project_id" {
   description = "Google Project ID"
   type        = string
-  default     = "matheus-tests"
+  default     = "ci-waap-a106"
 }
 
 variable "backend_port" {
