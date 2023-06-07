@@ -511,7 +511,7 @@ module "lb-http" {
 ## ---------------------------------------------------------------------------------------------------------------------
 
 resource "google_monitoring_dashboard" "dashboard" {
-  dashboard_json = file("dashboard.json")
+  dashboard_json = file("./dashboard.json")
   project        = var.project_id
 }
 
