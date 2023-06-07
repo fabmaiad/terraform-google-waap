@@ -543,10 +543,10 @@ resource "google_logging_metric" "logging_metric" {
   metric_descriptor {
     metric_kind = "DELTA"
     value_type  = "INT64"
-    
+
     labels {
-      key         = "signature_id"
-      value_type  = "STRING"
+      key        = "signature_id"
+      value_type = "STRING"
     }
   }
   label_extractors = {
