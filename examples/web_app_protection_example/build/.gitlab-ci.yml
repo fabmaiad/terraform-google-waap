@@ -20,13 +20,13 @@ image:
 
 variables:
   EXAMPLE_BUILD: "web_app_protection_example"
-  STATE_BUCKET_NAME: "cicd-prj-tfstate-bkt-1rd3"
-  TF_SA_EMAIL: "sa-terraform-cicd@cicd-prj-bbee.iam.gserviceaccount.com"
+  STATE_BUCKET_NAME: "<STATE_BUCKET_NAME>"
+  TF_SA_EMAIL: "TF_SA_EMAIL"
 
 before_script:
   - |
     echo "Setting up gcloud for impersonation"
-    gcloud config set auth/impersonate_service_account sa-terraform-cicd@cicd-prj-bbee.iam.gserviceaccount.com
+    gcloud config set auth/impersonate_service_account "$TF_SA_EMAIL"
     echo "Adding bucket information to backends"
     for i in `find -name 'backend.tf'`; do sed -r -i "s/_BUCKET_GCS_/"$STATE_BUCKET_NAME"/" $i; done
     for i in `find -name 'jenkins-functions.sh'`;do chmod +x $i; done
