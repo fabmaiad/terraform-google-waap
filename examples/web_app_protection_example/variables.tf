@@ -87,7 +87,7 @@ variable "machine_type_r1" {
 variable "tags_r1" {
   description = "Network tags, provided as a list"
   type        = list(string)
-  default     = ["backend-r1"]
+  default     = ["backend-r1", "lb-web-hc"]
 }
 
 variable "source_image_r1" {
@@ -193,7 +193,7 @@ variable "machine_type_r2" {
 variable "tags_r2" {
   description = "Network tags, provided as a list"
   type        = list(string)
-  default     = ["backend-r2"]
+  default     = ["backend-r2", "lb-web-hc"]
 }
 
 variable "source_image_r2" {
