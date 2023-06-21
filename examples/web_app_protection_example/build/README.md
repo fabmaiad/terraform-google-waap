@@ -14,7 +14,7 @@ Segmenting in this way, we make it possible to have a centralized point for chan
 
 ### jenkins
 
-If you already have a Jenkins environment to run your terraform code or if you intend to use Jenkins as your infrastructure CI/CD Tool, we created a Jenkinsfile example with a pipeline suggestion for this environment. Please, refer to the Jenkins file [link do Jenkinsfile] to view the example.
+If you already have a Jenkins environment to run your terraform code or if you intend to use Jenkins as your infrastructure CI/CD Tool, we created a [JenkinsFile](Jenkinsfile) example with a pipeline suggestion for this environment. Please, refer to the [JenkinsFile](Jenkinsfile) to view the example.
 
 - Requirements
 
@@ -36,6 +36,27 @@ For this condition, the pipeline code will run steps related to terraform init a
 
 
 ### gitlab
+
+If you already have a Gitlab environment to run your terraform code or if you intend to use Jenkins as your infrastructure CI/CD Tool, we created a [Gitlab-ci](.gitlab-ci.yml) example with a pipeline suggestion for this environment. Please, refer to the [Gitlab-ci](.gitlab-ci.yml) to view the example.
+
+- Requirements
+
+1.  Gitlab installed and running
+2.  A dedicated service account to terraform perform actions in the environment with owner permissions in the target project
+3.  A dedicated bucket to store the terraform state file
+4.  Change the variables "TF_SA_EMAIL" and "STATE_BUCKET_NAME" with the terraform service account email and the terraform state bucket name.
+
+- Gitlab-ci file rules and conditions
+
+This [Gitlab-ci](.gitlab-ci.yml) contains rules based on branch names considering two different behavior:
+
+1.  Behavior 1: this behavior happens when the code is pushed to a branch with the same name as an environment folder inside web-app-protection-example/environments/ (E.g., "prd", "dev"or "npd" ).
+
+For this condition, the pipeline code will run steps related to terraform init and terraform apply. When working with multiple environments, it’s really important to change the values of the variables inside the terraform.tfvars files for each environment in order to avoid conflicts.
+
+2.  Behavior 2: differently from behavior 1, this behavior happens when the branch name doesn't match an environment folder name. 
+
+For this condition, the pipeline code will run steps related to terraform init and terraform plan, generating a plan output without changing your infrastructure.
 
 ## Examples in development:
 
