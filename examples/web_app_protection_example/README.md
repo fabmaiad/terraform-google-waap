@@ -45,24 +45,26 @@ Here's a step by step to deploy and test this example:
 
 1.  Clone waap repo
 
-	git clone [https://github.com/GoogleCloudPlatform/terraform-google-waap.git](https://github.com/GoogleCloudPlatform/terraform-google-waap.git)
+	```git clone [https://github.com/GoogleCloudPlatform/terraform-google-waap.git](https://github.com/GoogleCloudPlatform/terraform-google-waap.git)```
 
 2.  Change to web-app-protection-example directory:
 
-    cd terraform-google-waap/examples/web-app-protection-example
+    ```cd terraform-google-waap/examples/web-app-protection-example```
 
 3.  Run terraform init from within this example directory.
     
-    terraform init
+    ```terraform init```
 
-4.  Change the terraform.tfvars file values, including values related to your environment.
-  
+4. Rename the terraform.tfvars.examples to terraform.tfvars and edit the variable values, including values related to your environment.
+
+    ```mv terraform.tfvars.examples terraform.tfvars```
+
 Note: The "project_id" is the only variable that must be changed. Any other variable change is optional.
 
 5.  Run terraform plan and check the prompt output.
   
-    terraform plan
+    ```terraform plan```
 
 6.  Run terraform apply within this example directory.
 
-    terraform apply
+    ```terraform apply```
