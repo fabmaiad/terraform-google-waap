@@ -21,7 +21,7 @@ Additionally, we include an example of an infrastructure pipeline using Jenkins 
      
 ## IAM Permissions
 
--   The user or service account deploying this example must have the following IAM roles:Editor roles/editor
+-   The user or service account deploying this example must have the following IAM roles:Owner roles/owner
 -   reCAPTCHA Enterprise Admin: roles/recaptchaenterprise.admin
 -   Artifact Registry Admin: roles/artifactregistry.admin
   
