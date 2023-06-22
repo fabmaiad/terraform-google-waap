@@ -81,7 +81,6 @@ resource "google_compute_instance_group_manager" "mig" {
     name = var.port_name
     port = var.backend_port
   }
-
   update_policy {
     type                           = "PROACTIVE"
     minimal_action                 = "REPLACE"
