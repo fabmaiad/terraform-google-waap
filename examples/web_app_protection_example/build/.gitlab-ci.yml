@@ -30,7 +30,7 @@ before_script:
     gcloud config set auth/impersonate_service_account "$TF_SA_EMAIL"
     echo "Adding bucket information to backends"
     for i in `find -name 'backend.tf'`; do sed -r -i "s/_BUCKET_GCS_/"$STATE_BUCKET_NAME"/" $i; done
-    for i in `find -name 'jenkins-functions.sh'`;do chmod +x $i; done
+    for i in `find -name 'pipeline-functions.sh'`;do chmod +x $i; done
     cd examples/"$EXAMPLE_BUILD" ; cp -Prf ../../modules .
     for i in `find environments/ -mindepth 1 -maxdepth 1 -type d` ; do cp -Prf *.tf ./scripts/ $i ; done
 
@@ -46,7 +46,7 @@ tf_plan_all:
     - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-    - build/jenkins-functions.sh plan_validate_all "$CI_COMMIT_BRANCH"
+    - build/pipeline-functions.sh plan_validate_all "$CI_COMMIT_BRANCH"
   except:
     - dev
     - prd
@@ -58,7 +58,7 @@ tf_init:
     - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-    - build/jenkins-functions.sh init "$CI_COMMIT_BRANCH"
+    - build/pipeline-functions.sh init "$CI_COMMIT_BRANCH"
   only:
     - dev
     - prd
@@ -70,7 +70,7 @@ tf_plan:
     - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-    - build/jenkins-functions.sh plan "$CI_COMMIT_BRANCH"
+    - build/pipeline-functions.sh plan "$CI_COMMIT_BRANCH"
   only:
     - dev
     - prd
@@ -82,7 +82,7 @@ tf_apply:
     - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-    - build/jenkins-functions.sh apply "$CI_COMMIT_BRANCH"
+    - build/pipeline-functions.sh apply "$CI_COMMIT_BRANCH"
   only:
     - dev
     - prd
