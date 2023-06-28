@@ -16,8 +16,8 @@ options:
   env:
     - 'BRANCH_NAME=$BRANCH_NAME'
     - 'EXAMPLE_BUILD=web_app_protection_example'
-    - 'STATE_BUCKET_NAME=<STATE_BUCKET_NAME>'
-    - 'TF_SA_EMAIL=<TF_SA_EMAIL>'
+    - 'STATE_BUCKET_NAME=cicd-prj-tfstate-bkt-1rd3'
+    - 'TF_SA_EMAIL=sa-terraform-cicd@cicd-prj-bbee.iam.gserviceaccount.com'
 steps:
 - name: 'hashicorp/terraform:1.3.9'
   entrypoint: '/usr/bin/env'
@@ -27,11 +27,11 @@ steps:
     - '-c'
     - |
       echo "Setting up gcloud for impersonation"
-      gcloud config set auth/impersonate_service_account "$TF_SA_EMAIL"
+      gcloud config set auth/impersonate_service_account "$$TF_SA_EMAIL"
       echo "Adding bucket information to backends"
-      for i in $(find -name 'backend.tf'); do sed -r -i "s/_BUCKET_GCS_/"$STATE_BUCKET_NAME"/" $i; done
+      for i in $(find -name 'backend.tf'); do sed -r -i "s/_BUCKET_GCS_/"$$STATE_BUCKET_NAME"/" $i; done
       for i in $(find -name 'pipeline-functions.sh'); do chmod +x $i; done
-      cd examples/"$EXAMPLE_BUILD"
+      cd examples/"$$EXAMPLE_BUILD"
       cp -Prf ../../modules .
       for i in $(find environments/ -mindepth 1 -maxdepth 1 -type d); do cp -Prf *.tf ./scripts/ $i; done
 
@@ -42,9 +42,9 @@ steps:
     - 'bash'
     - '-c'
     - |
-      if [[ "$BRANCH_NAME" != "dev" && "$BRANCH_NAME" != "prd" && "$BRANCH_NAME" != "npd" ]]; then
-        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-        build/pipeline-functions.sh plan_validate_all "$BRANCH_NAME"
+      if [[ "$$BRANCH_NAME" != "dev" && "$$BRANCH_NAME" != "prd" && "$$BRANCH_NAME" != "npd" ]]; then
+        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$$TF_SA_EMAIL"
+        build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
@@ -54,9 +54,9 @@ steps:
     - 'bash'
     - '-c'
     - |
-      if [[ "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "prd" || "$BRANCH_NAME" == "npd" ]]; then
-        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-        build/pipeline-functions.sh init "$BRANCH_NAME"
+      if [[ "$$BRANCH_NAME" == "dev" || "$$BRANCH_NAME" == "prd" || "$$BRANCH_NAME" == "npd" ]]; then
+        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$$TF_SA_EMAIL"
+        build/pipeline-functions.sh init "$$BRANCH_NAME"
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
@@ -66,9 +66,9 @@ steps:
     - 'bash'
     - '-c'
     - |
-      if [[ "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "prd" || "$BRANCH_NAME" == "npd" ]]; then
-        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-        build/pipeline-functions.sh plan "$BRANCH_NAME"
+      if [[ "$$BRANCH_NAME" == "dev" || "$$BRANCH_NAME" == "prd" || "$$BRANCH_NAME" == "npd" ]]; then
+        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$$TF_SA_EMAIL"
+        build/pipeline-functions.sh plan "$$BRANCH_NAME"
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
@@ -78,7 +78,7 @@ steps:
     - 'bash'
     - '-c'
     - |
-      if [[ "$BRANCH_NAME" == "dev" || "$BRANCH_NAME" == "prd" || "$BRANCH_NAME" == "npd" ]]; then
-        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-        build/pipeline-functions.sh apply "$BRANCH_NAME"
+      if [[ "$$BRANCH_NAME" == "dev" || "$$BRANCH_NAME" == "prd" || "$$BRANCH_NAME" == "npd" ]]; then
+        export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$$TF_SA_EMAIL"
+        build/pipeline-functions.sh apply "$$BRANCH_NAME"
       fi
