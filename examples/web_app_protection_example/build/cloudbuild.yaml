@@ -103,6 +103,7 @@ steps:
         $_BEFORE_SCRIPT
         ls -lah
         ls -lah build/
+        chmod +x build/pipeline-functions.sh
         build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
