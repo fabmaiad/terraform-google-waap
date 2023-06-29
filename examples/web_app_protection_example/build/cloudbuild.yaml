@@ -102,6 +102,8 @@ steps:
       if [[ "$$BRANCH_NAME" != "dev" && "$$BRANCH_NAME" != "prd" && "$$BRANCH_NAME" != "npd" ]]; then
         $_BEFORE_SCRIPT
         ls -lah
+        ls -lah build/
+        build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
