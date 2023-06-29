@@ -104,6 +104,7 @@ steps:
         ls -lah
         ls -lah build/
         chmod +x build/pipeline-functions.sh
+        ls -lah build/
         build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
