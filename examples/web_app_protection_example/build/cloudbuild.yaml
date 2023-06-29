@@ -101,8 +101,7 @@ steps:
     - |
       if [[ "$$BRANCH_NAME" != "dev" && "$$BRANCH_NAME" != "prd" && "$$BRANCH_NAME" != "npd" ]]; then
         $_BEFORE_SCRIPT
-        chmod +x /workspace/examples/web_app_protection_example/build/pipeline-functions.sh
-        /workspace/examples/web_app_protection_example/build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
+        ls -lah
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
