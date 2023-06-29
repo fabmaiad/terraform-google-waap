@@ -101,10 +101,11 @@ steps:
     - |
       if [[ "$$BRANCH_NAME" != "dev" && "$$BRANCH_NAME" != "prd" && "$$BRANCH_NAME" != "npd" ]]; then
         $_BEFORE_SCRIPT
+        pwd
+        find ./ -iname pipeline-functions.sh
         ls -lah
         ls -lah build/
         chmod +x build/pipeline-functions.sh
-        ls -lah build/
         ./build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
