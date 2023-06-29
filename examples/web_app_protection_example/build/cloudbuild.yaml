@@ -101,11 +101,17 @@ steps:
     - |
       if [[ "$$BRANCH_NAME" != "dev" && "$$BRANCH_NAME" != "prd" && "$$BRANCH_NAME" != "npd" ]]; then
         $_BEFORE_SCRIPT
+        echo "Diretorio Atual"
         pwd
+        echo "Resultado do find"
         find ./ -iname pipeline-functions.sh
+        echo "ls -lah dir atual"
         ls -lah
+        echo "ls -lah build/"
         ls -lah build/
-        chmod +x build/pipeline-functions.sh
+        echo "setando permissao de execução"
+        chmod -v +x build/pipeline-functions.sh
+        echo "execução pipeline-functions"
         ./build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
