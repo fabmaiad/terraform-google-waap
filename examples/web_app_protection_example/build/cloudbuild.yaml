@@ -112,7 +112,7 @@ steps:
         echo "setando permissao de execução"
         chmod -v +x build/pipeline-functions.sh
         echo "execução pipeline-functions"
-        ./build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
+        sh ./build/pipeline-functions.sh plan_validate_all "$$BRANCH_NAME"
       fi
 
 - name: 'hashicorp/terraform:1.3.9'
