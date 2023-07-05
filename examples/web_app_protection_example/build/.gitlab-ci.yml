@@ -22,7 +22,7 @@ image:
 variables:
   EXAMPLE_BUILD: "web_app_protection_example"
   STATE_BUCKET_NAME: "<STATE_BUCKET_NAME>"
-  TF_SA_EMAIL: "<TF_SA_EMAI>"
+  TF_SA_EMAIL: "<TF_SA_EMAIL>"
 
 before_script:
   - |
