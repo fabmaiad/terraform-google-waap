@@ -21,8 +21,8 @@ image:
 
 variables:
   EXAMPLE_BUILD: "web_app_protection_example"
-  STATE_BUCKET_NAME: "<STATE_BUCKET_NAME>"
-  TF_SA_EMAIL: "<TF_SA_EMAIL>"
+  STATE_BUCKET_NAME: "cicd-prj-tfstate-bkt-1rd3"
+  TF_SA_EMAIL: "sa-terraform-cicd@cicd-prj-bbee.iam.gserviceaccount.com"
 
 before_script:
   - |
