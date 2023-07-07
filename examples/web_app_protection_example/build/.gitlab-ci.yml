@@ -20,9 +20,9 @@ image:
     - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
 variables:
-  EXAMPLE_BUILD: "web_app_protection_example"
+  REPO_FOLDER: "web_app_protection_example"
   STATE_BUCKET_NAME: "<STATE_BUCKET_NAME>"
-  TF_SA_EMAIL: "<TF_SA_EMAI>"
+  TF_SA_EMAIL: "<TF_SA_EMAIL>"
 
 before_script:
   - |
@@ -31,31 +31,17 @@ before_script:
     echo "Adding bucket information to backends"
     for i in `find -name 'backend.tf'`; do sed -r -i "s/_BUCKET_GCS_/"$STATE_BUCKET_NAME"/" $i; done
     for i in `find -name 'jenkins-functions.sh'`;do chmod +x $i; done
-    cd examples/"$EXAMPLE_BUILD" ; cp -Prf ../../modules .
+    cd examples/"$REPO_FOLDER" ; cp -Prf ../../modules .
     for i in `find environments/ -mindepth 1 -maxdepth 1 -type d` ; do cp -Prf *.tf ./scripts/ $i ; done
 
 stages:
+  - tf_init
   - tf_plan_all
   - tf_plan
   - tf_apply
-  - tf_init
-
-tf_plan_all:
-  stage: tf_plan_all
-  tags:
-    - gitlab-runner
-  script:
-    - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
-    - build/jenkins-functions.sh plan_validate_all "$CI_COMMIT_BRANCH"
-  except:
-    - dev
-    - prd
-    - npd
 
 tf_init:
   stage: tf_init
-  tags:
-    - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
     - build/jenkins-functions.sh init "$CI_COMMIT_BRANCH"
@@ -63,11 +49,26 @@ tf_init:
     - dev
     - prd
     - npd
+  artifacts:
+    paths: 
+      - $CI_PROJECT_DIR/examples/$REPO_FOLDER/environments
+  tags:
+    - gitlab-runner
+
+tf_plan_all:
+  stage: tf_plan_all
+  script:
+    - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
+    - build/jenkins-functions.sh plan_validate_all "$CI_COMMIT_BRANCH"
+  except:
+    - dev
+    - prd
+    - npd
+  tags:
+    - gitlab-runner
 
 tf_plan:
   stage: tf_plan
-  tags:
-    - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
     - build/jenkins-functions.sh plan "$CI_COMMIT_BRANCH"
@@ -75,11 +76,14 @@ tf_plan:
     - dev
     - prd
     - npd
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/examples/$REPO_FOLDER/tmp_plan/*.tfplan
+  tags:
+    - gitlab-runner
 
 tf_apply:
   stage: tf_apply
-  tags:
-    - gitlab-runner
   script:
     - export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT="$TF_SA_EMAIL"
     - build/jenkins-functions.sh apply "$CI_COMMIT_BRANCH"
@@ -87,3 +91,5 @@ tf_apply:
     - dev
     - prd
     - npd
+  tags:
+    - gitlab-runner
